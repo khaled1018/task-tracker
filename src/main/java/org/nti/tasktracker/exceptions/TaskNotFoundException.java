@@ -1,4 +1,4 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.exceptions;
 
 public class TaskNotFoundException extends RuntimeException{
     public TaskNotFoundException(String message) {

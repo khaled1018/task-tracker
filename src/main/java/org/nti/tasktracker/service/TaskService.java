@@ -1,9 +1,14 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.service;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Transactional;
-import lombok.Value;
-import org.springframework.http.ResponseEntity;
+import org.nti.tasktracker.config.TaskTrackerProperties;
+import org.nti.tasktracker.dto.TaskDto;
+import org.nti.tasktracker.entity.Task;
+import org.nti.tasktracker.exceptions.MaxTasksExceededException;
+import org.nti.tasktracker.exceptions.TaskNotFoundException;
+import org.nti.tasktracker.repository.TaskRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +16,9 @@ import java.util.List;
 @Service
 public class TaskService {
 
+    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
     private final TaskRepository taskRepository;
     private final TaskTrackerProperties props;
-
-
 
     public TaskService(TaskRepository taskRepository, TaskTrackerProperties props) {
         this.taskRepository = taskRepository;
@@ -23,13 +27,14 @@ public class TaskService {
 
     @Transactional
     public Task createTask(TaskDto taskDto) {
-        if(taskRepository.countTasks() >= 3){
-            throw new MaxTasksExceededException("Cannot create task: maximum of 3 tasks reached.");
+        if(taskRepository.countTasks() == props.getMaxTasks()) {
+            throw new MaxTasksExceededException("Cannot create task: maximum of "+ props.getMaxTasks() +" tasks reached.");
         }
         Task task = new Task();
         task.setTitle(taskDto.title());
         task.setDescription(taskDto.description());
         task.setDueDate(taskDto.dueDate());
+        log.info("Created task \"{}\"", task.getTitle());
         return taskRepository.save(task);
     }
 
@@ -52,10 +57,7 @@ public class TaskService {
     }
 
     public Task getTask(Long id) {
-        Task task = taskRepository.findById(id);
-        if (task == null) {
-            throw new TaskNotFoundException(String.format("Task with ID %s doesn't exist", id));
-        }
+        isExisted(id);
         return taskRepository.findById(id);
     }
 
@@ -65,6 +67,7 @@ public class TaskService {
         return taskRepository.updateTask(id, taskDto);
     }
 
+    @Transactional
     public Task markTaskAsCompleted(Long id) {
         isExisted(id);
         return taskRepository.markTaskAsCompleted(id);

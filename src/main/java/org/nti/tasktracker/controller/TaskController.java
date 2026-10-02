@@ -1,5 +1,9 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.controller;
 
+import jakarta.validation.Valid;
+import org.nti.tasktracker.entity.Task;
+import org.nti.tasktracker.dto.TaskDto;
+import org.nti.tasktracker.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +20,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto) {
+    public ResponseEntity<Task> create(@RequestBody @Valid TaskDto taskDto) {
         Task savedTask = taskService.createTask(taskDto);
 
         URI location = URI.create("/api/tasks/" + savedTask.getId());
@@ -25,15 +29,16 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAllTasks(
+    public ResponseEntity<List<Task>> getAllTasks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) Integer size) {
-        return taskService.getAllTasks(page, size);
-    }
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Boolean completed) {
 
-    @GetMapping("/{completed}")
-    public ResponseEntity<List<Task>> getCompletedTasks(@RequestParam boolean completed){
-        return ResponseEntity.ok().body(taskService.getCompletedTasks(completed));
+        if(completed != null){
+            return ResponseEntity.ok().body(taskService.getCompletedTasks(completed));
+
+        }
+        return ResponseEntity.ok().body(taskService.getAllTasks(page, limit));
     }
 
     @GetMapping("/{id}")

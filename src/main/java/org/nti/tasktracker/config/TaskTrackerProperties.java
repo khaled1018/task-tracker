@@ -1,4 +1,4 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
 @Getter
 public class TaskTrackerProperties {
 
-    private int maxTasks = 50;
-    private int defaultPageSize = 10;
+    private int maxTasks = 6;
+    private int defaultPageSize = 2;
 }

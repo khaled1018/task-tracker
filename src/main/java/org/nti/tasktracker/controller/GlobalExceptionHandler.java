@@ -1,5 +1,8 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.controller;
 
+import org.nti.tasktracker.dto.ErrorDto;
+import org.nti.tasktracker.exceptions.MaxTasksExceededException;
+import org.nti.tasktracker.exceptions.TaskNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -16,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<ErrorDto> handleUserNotFoundException(TaskNotFoundException ex) {
         ErrorDto errorDto = new ErrorDto();
-        errorDto.setError("User not found");
+        errorDto.setError("Task not found");
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 

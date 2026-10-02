@@ -1,4 +1,4 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

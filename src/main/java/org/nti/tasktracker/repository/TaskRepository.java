@@ -1,12 +1,9 @@
-package org.nti.tasktracker;
+package org.nti.tasktracker.repository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.nti.tasktracker.dto.TaskDto;
+import org.nti.tasktracker.entity.Task;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -37,7 +34,7 @@ public class TaskRepository {
 
     public List<Task> findCompletedTask(boolean completed) {
         return em.createQuery(
-                "SELECT t FROM TASK WHERE t.completed = :completed", Task.class
+                "SELECT t FROM Task t WHERE t.completed = :completed", Task.class
         ).setParameter("completed", completed).getResultList();
     }
 
